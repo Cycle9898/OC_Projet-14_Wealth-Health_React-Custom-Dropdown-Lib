@@ -9,7 +9,7 @@ export default defineConfig({
   plugins: [
     react(),
     libInjectCss(),
-    dts({ include: ['lib'] })
+    dts({ include: ['lib'],copyDtsFiles: true })
   ],
   build: {
     copyPublicDir: false,

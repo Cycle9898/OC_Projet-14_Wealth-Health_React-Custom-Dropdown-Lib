@@ -1,1 +1,65 @@
-/* Global CSS */
+/*** Global CSS for Dropdown component ***/
+
+/* CSS variables */
+
+:root {
+    --main-color: black;
+    --secondary-color: blue;
+}
+
+/* Dropdown list container */
+
+.rcdc-dropdown-wrapper {
+    box-sizing: border-box;
+    width: 100%;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+    position: relative;
+}
+
+/* Dropdown list displayed value */
+
+.rcdc-dropdown-value {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 2px solid var(--main-color);
+    border-radius: 5px;
+    height: 100%;
+    padding: 10px;
+}
+
+.rcdc-dropdown-value>svg {
+    color: var(--main-color);
+    font-size: 1.5rem;
+}
+
+/* Options list */
+
+.rcdc-dropdown-list {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding: 0px;
+    list-style-type: none;
+    position: absolute;
+    margin-top: -3px;
+    height: fit-content;
+    border: 2px solid var(--main-color);
+    border-radius: 0 0 5px 5px;
+    z-index: 5;
+    background-color: white;
+}
+
+/* Option element */
+
+.rcdc-dropdown-option {
+    padding: 5px;
+}
+
+.rcdc-dropdown-option:hover {
+    background-color: var(--secondary-color);
+    color: white;
+}
