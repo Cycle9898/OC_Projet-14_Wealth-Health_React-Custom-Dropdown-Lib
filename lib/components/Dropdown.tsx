@@ -1,4 +1,4 @@
-import { useEffect,useState } from "react";
+import { useEffect,useState,useRef } from "react";
 import type { DropdownProps } from "../types/Dropdown";
 import { FaCaretDown,FaCaretUp } from "react-icons/fa6";
 
@@ -6,9 +6,11 @@ import { FaCaretDown,FaCaretUp } from "react-icons/fa6";
  * @description
  * React component that render a customizable drop-down list
  * 
- * @param title - optional : title, default value, that appear first on the dropdown list when no option was chosen
- * Otherwise, the first option (or empty string if there is none) will appear
- * @param optionArray - An array of objects, with an id and a value, that represent all the available options in the dropDown
+ * @param displayedValue - Default value (for exemple from the parent component's local state)
+ * that appear first on the dropdown list when no option was chosen.
+ * Afterwards, it will contain the chosen value in the list.
+ * @param setDisplayedValue - setState method (for exemple from the parent component's local state) to update displayedValue.
+ * @param optionArray - An array of objects, with an id and a value properties, that represent all the available options in the dropdown list
  * 
  * @returns JSX element
  */
@@ -17,6 +19,57 @@ export function Dropdown({ displayedValue,setDisplayedValue,optionArray }: Dropd
     const [isOpen,setIsOpen] = useState<boolean>(false);
 
     const toggleIsOpen = () => setIsOpen((previousState: boolean) => !previousState);
+
+    const handleKeyPresses = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        event.key === "Enter" && toggleIsOpen();
+        event.key === "Escape" && setIsOpen(false);
+        changeDisplayedValueWithSomeKeys(event);
+    };
+
+    // Function that deactivate scrolling with up and down arrow keys when dropdown list is focused
+    const deactivateScrolling = (event: KeyboardEvent) => {
+        // Conditions
+        const isControlKeyPressed: boolean = ["ArrowUp","ArrowDown","Home","End"].includes(event.key);
+
+        const isDropdownTargeted: boolean = event.target === dropdownRef.current ||
+            liElementRef.current.includes(event.target as HTMLLIElement);
+
+        if (isDropdownTargeted && isControlKeyPressed) {
+            event.preventDefault();
+        }
+    };
+
+    // Change displayed value with up and down arrow keys
+    const changeDisplayedValueWithSomeKeys = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        const currentIndex: number = optionArray.findIndex((option => option.value === displayedValue));
+
+        switch (event.key) {
+            case "ArrowUp":
+                if (currentIndex === 0 || currentIndex === -1) {
+                    setDisplayedValue(optionArray[optionArray.length - 1].value);
+                } else {
+                    setDisplayedValue(optionArray[currentIndex - 1].value);
+                }
+                break;
+            case "ArrowDown":
+                if (currentIndex === (optionArray.length - 1)) {
+                    setDisplayedValue(optionArray[0].value);
+                } else {
+                    setDisplayedValue(optionArray[currentIndex + 1].value);
+                }
+                break;
+            case "Home":
+                setDisplayedValue(optionArray[0].value);
+                break;
+            case "End":
+                setDisplayedValue(optionArray[optionArray.length - 1].value);
+                break;
+        }
+    }
+
+    // Refs
+    const dropdownRef: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
+    const liElementRef: React.MutableRefObject<HTMLLIElement[]> = useRef([]);
 
     // Check if optionArray's objects have unique id property
     const optionIdArray: string[] = optionArray.map(option => option?.id);
@@ -31,29 +84,58 @@ export function Dropdown({ displayedValue,setDisplayedValue,optionArray }: Dropd
         if (displayedValue === "" && optionArray.length > 0) {
             setDisplayedValue(optionArray[0].value);
         }
-    },[displayedValue,setDisplayedValue,optionArray]);
+
+        // When dropdown list is open, focus automatically on the previously chosen element (if any)
+        if (isOpen) {
+            const currentLiElement = liElementRef.current.find(element => element?.innerText === displayedValue);
+            currentLiElement?.focus();
+        }
+
+        // Check if a click is made outside of the dropdown list and close it
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        }
+        document.addEventListener("click",(event) => handleClickOutside(event));
+
+        // Deactivate window scrolling with arrow keys
+        window.addEventListener("keydown",deactivateScrolling);
+
+        return () => {
+            // Clean up event listeners
+            document.removeEventListener("click",(event) => handleClickOutside(event));
+            window.removeEventListener("keydown",deactivateScrolling);
+        }
+    },[displayedValue,setDisplayedValue,optionArray,isOpen]);
 
     return (
         <div className="rcdc-dropdown-wrapper"
+            ref={dropdownRef}
+            tabIndex={0}
             onClick={toggleIsOpen}
+            onKeyUp={(event: React.KeyboardEvent<HTMLDivElement>) => handleKeyPresses(event)}
         >
             <div className="rcdc-dropdown-value">
                 <span>{displayedValue}</span>
 
-                {isOpen ?
+                {isOpen ? (
                     <FaCaretUp />
-                    :
+                ) : (
                     <FaCaretDown />
-                }
+                )}
             </div>
 
             {isOpen &&
                 <ul className="rcdc-dropdown-list">
-                    {optionArray.map(option => {
+                    {optionArray.map((option,index) => {
                         return (
                             <li key={option.id}
                                 className="rcdc-dropdown-option"
+                                tabIndex={0}
+                                ref={(liElement: HTMLLIElement) => liElementRef.current[index] = liElement}
                                 onClick={() => setDisplayedValue(option.value)}
+                                onKeyDown={(event) => event.key === "Enter" && setDisplayedValue(option.value)}
                             >
                                 {option.value}
                             </li>

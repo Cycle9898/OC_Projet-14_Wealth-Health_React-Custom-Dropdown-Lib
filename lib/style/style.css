@@ -59,7 +59,8 @@
     padding: 5px;
 }
 
-.rcdc-dropdown-option:hover {
+.rcdc-dropdown-option:hover,
+.rcdc-dropdown-option:focus {
     background-color: var(--secondary-color);
     color: white;
 }
