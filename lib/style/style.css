@@ -20,7 +20,7 @@
 
 /* Dropdown list displayed value */
 
-.rcdc-dropdown-value {
+.rcdc-dropdown-value-container {
     box-sizing: border-box;
     display: flex;
     justify-content: space-between;
@@ -31,7 +31,14 @@
     padding: 10px;
 }
 
-.rcdc-dropdown-value>svg {
+.rcdc-dropdown-value-text,
+.rcdc-dropdown-option {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.rcdc-dropdown-value-logo {
     color: var(--main-color);
     font-size: 1.5rem;
 }

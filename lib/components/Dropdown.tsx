@@ -1,5 +1,5 @@
 import { useEffect,useState,useRef } from "react";
-import type { DropdownProps } from "../types/Dropdown";
+import type { DropdownProps,OptionType } from "../types/Dropdown";
 import { FaCaretDown,FaCaretUp } from "react-icons/fa6";
 
 /**
@@ -21,20 +21,28 @@ export function Dropdown({ displayedValue,setDisplayedValue,optionArray }: Dropd
     const toggleIsOpen = () => setIsOpen((previousState: boolean) => !previousState);
 
     const handleKeyPresses = (event: React.KeyboardEvent<HTMLDivElement>) => {
-        event.key === "Enter" && toggleIsOpen();
+        (event.key === "Enter" || event.key === " ") && toggleIsOpen();
         event.key === "Escape" && setIsOpen(false);
-        changeDisplayedValueWithSomeKeys(event);
+
+        if (optionArray.length > 0) {
+            changeDisplayedValueWithSomeKeys(event);
+        }
     };
 
-    // Function that deactivate scrolling with up and down arrow keys when dropdown list is focused
+    const validateOptionWithKeyboard = (event: React.KeyboardEvent<HTMLLIElement>,option: OptionType) => {
+        (event.key === "Enter" || event.key === " ") && setDisplayedValue(option.value)
+    };
+
+    // Function that deactivate keyboard navigation when the dropdown list is focused
     const deactivateScrolling = (event: KeyboardEvent) => {
         // Conditions
-        const isControlKeyPressed: boolean = ["ArrowUp","ArrowDown","Home","End"].includes(event.key);
+        const isNavigationKeyPressed: boolean = ["ArrowUp","ArrowDown","Home","End"," "].includes(event.key);
 
         const isDropdownTargeted: boolean = event.target === dropdownRef.current ||
             liElementRef.current.includes(event.target as HTMLLIElement);
 
-        if (isDropdownTargeted && isControlKeyPressed) {
+        // Deactivate navigation with keyboard when it's necessary
+        if (isDropdownTargeted && isNavigationKeyPressed) {
             event.preventDefault();
         }
     };
@@ -99,7 +107,7 @@ export function Dropdown({ displayedValue,setDisplayedValue,optionArray }: Dropd
         }
         document.addEventListener("click",(event) => handleClickOutside(event));
 
-        // Deactivate window scrolling with arrow keys
+        // Deactivate keyboard navigation inside the browser's window when it's necessary
         window.addEventListener("keydown",deactivateScrolling);
 
         return () => {
@@ -116,13 +124,13 @@ export function Dropdown({ displayedValue,setDisplayedValue,optionArray }: Dropd
             onClick={toggleIsOpen}
             onKeyUp={(event: React.KeyboardEvent<HTMLDivElement>) => handleKeyPresses(event)}
         >
-            <div className="rcdc-dropdown-value">
-                <span>{displayedValue}</span>
+            <div className="rcdc-dropdown-value-container">
+                <span className="rcdc-dropdown-value-text">{displayedValue}</span>
 
                 {isOpen ? (
-                    <FaCaretUp />
+                    <FaCaretUp className="rcdc-dropdown-value-logo" />
                 ) : (
-                    <FaCaretDown />
+                    <FaCaretDown className="rcdc-dropdown-value-logo" />
                 )}
             </div>
 
@@ -135,7 +143,7 @@ export function Dropdown({ displayedValue,setDisplayedValue,optionArray }: Dropd
                                 tabIndex={0}
                                 ref={(liElement: HTMLLIElement) => liElementRef.current[index] = liElement}
                                 onClick={() => setDisplayedValue(option.value)}
-                                onKeyDown={(event) => event.key === "Enter" && setDisplayedValue(option.value)}
+                                onKeyDown={(event: React.KeyboardEvent<HTMLLIElement>) => validateOptionWithKeyboard(event,option)}
                             >
                                 {option.value}
                             </li>
