@@ -31,6 +31,10 @@
     padding: 10px;
 }
 
+.rcdc-dropdown-value-container:focus {
+    outline: 1px solid var(--main-color);
+}
+
 .rcdc-dropdown-value-text,
 .rcdc-dropdown-option {
     overflow: hidden;
@@ -41,6 +45,7 @@
 .rcdc-dropdown-value-logo {
     color: var(--main-color);
     font-size: 1.5rem;
+    pointer-events: none;
 }
 
 /* Options list */

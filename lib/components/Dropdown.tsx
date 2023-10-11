@@ -1,4 +1,4 @@
-import { useEffect,useState,useRef } from "react";
+import { useEffect,useState,useRef,useCallback } from "react";
 import type { DropdownProps,OptionType } from "../types/Dropdown";
 import { FaCaretDown,FaCaretUp } from "react-icons/fa6";
 
@@ -38,33 +38,51 @@ export function Dropdown({ displayedValue,setDisplayedValue,optionArray }: Dropd
         // Conditions
         const isNavigationKeyPressed: boolean = ["ArrowUp","ArrowDown","Home","End"," "].includes(event.key);
 
-        const isDropdownTargeted: boolean = event.target === dropdownRef.current ||
+        const isDropdownTargeted: boolean = event.target === dropdownValueRef.current ||
             liElementRef.current.includes(event.target as HTMLLIElement);
 
         // Deactivate navigation with keyboard when it's necessary
-        if (isDropdownTargeted && isNavigationKeyPressed) {
+        if ((isDropdownTargeted && isNavigationKeyPressed) || (isOpen && event.key === "Tab")) {
             event.preventDefault();
         }
     };
+
+    // Cache deactivateScrolling function definition with useCallback
+    const cachedDeactivateScrolling = useCallback(deactivateScrolling,[isOpen]);
 
     // Change displayed value with up and down arrow keys
     const changeDisplayedValueWithSomeKeys = (event: React.KeyboardEvent<HTMLDivElement>) => {
         const currentIndex: number = optionArray.findIndex((option => option.value === displayedValue));
 
+        const changeToPreviousOption = () => {
+            if (currentIndex === 0 || currentIndex === -1) {
+                setDisplayedValue(optionArray[optionArray.length - 1].value);
+            } else {
+                setDisplayedValue(optionArray[currentIndex - 1].value);
+            }
+        }
+
+        const changeToNextOption = () => {
+            if (currentIndex === (optionArray.length - 1)) {
+                setDisplayedValue(optionArray[0].value);
+            } else {
+                setDisplayedValue(optionArray[currentIndex + 1].value);
+            }
+        }
+
         switch (event.key) {
-            case "ArrowUp":
-                if (currentIndex === 0 || currentIndex === -1) {
-                    setDisplayedValue(optionArray[optionArray.length - 1].value);
-                } else {
-                    setDisplayedValue(optionArray[currentIndex - 1].value);
+            case "Tab":
+                if (isOpen && !event.shiftKey) {
+                    changeToNextOption();
+                } else if (isOpen && event.shiftKey) {
+                    changeToPreviousOption();
                 }
                 break;
+            case "ArrowUp":
+                changeToPreviousOption();
+                break;
             case "ArrowDown":
-                if (currentIndex === (optionArray.length - 1)) {
-                    setDisplayedValue(optionArray[0].value);
-                } else {
-                    setDisplayedValue(optionArray[currentIndex + 1].value);
-                }
+                changeToNextOption();
                 break;
             case "Home":
                 setDisplayedValue(optionArray[0].value);
@@ -77,6 +95,7 @@ export function Dropdown({ displayedValue,setDisplayedValue,optionArray }: Dropd
 
     // Refs
     const dropdownRef: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
+    const dropdownValueRef: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
     const liElementRef: React.MutableRefObject<HTMLLIElement[]> = useRef([]);
 
     // Check if optionArray's objects have unique id property
@@ -108,39 +127,53 @@ export function Dropdown({ displayedValue,setDisplayedValue,optionArray }: Dropd
         document.addEventListener("click",(event) => handleClickOutside(event));
 
         // Deactivate keyboard navigation inside the browser's window when it's necessary
-        window.addEventListener("keydown",deactivateScrolling);
+        window.addEventListener("keydown",cachedDeactivateScrolling);
 
         return () => {
             // Clean up event listeners
             document.removeEventListener("click",(event) => handleClickOutside(event));
-            window.removeEventListener("keydown",deactivateScrolling);
+            window.removeEventListener("keydown",cachedDeactivateScrolling);
         }
-    },[displayedValue,setDisplayedValue,optionArray,isOpen]);
+    },[displayedValue,setDisplayedValue,optionArray,isOpen,cachedDeactivateScrolling]);
 
     return (
         <div className="rcdc-dropdown-wrapper"
             ref={dropdownRef}
-            tabIndex={0}
             onClick={toggleIsOpen}
             onKeyUp={(event: React.KeyboardEvent<HTMLDivElement>) => handleKeyPresses(event)}
         >
-            <div className="rcdc-dropdown-value-container">
+            <div className="rcdc-dropdown-value-container"
+                ref={dropdownValueRef}
+                tabIndex={0}
+                role="combobox"
+                aria-label="Choose an option from the dropdown list"
+                aria-expanded={isOpen}
+                aria-haspopup="listbox"
+            >
                 <span className="rcdc-dropdown-value-text">{displayedValue}</span>
 
                 {isOpen ? (
-                    <FaCaretUp className="rcdc-dropdown-value-logo" />
+                    <FaCaretUp className="rcdc-dropdown-value-logo"
+                        aria-label="Close dropdown list"
+                    />
                 ) : (
-                    <FaCaretDown className="rcdc-dropdown-value-logo" />
+                    <FaCaretDown className="rcdc-dropdown-value-logo"
+                        aria-label="Open dropdown list"
+                    />
                 )}
             </div>
 
             {isOpen &&
-                <ul className="rcdc-dropdown-list">
+                <ul className="rcdc-dropdown-list"
+                    role="listbox"
+                >
                     {optionArray.map((option,index) => {
                         return (
                             <li key={option.id}
                                 className="rcdc-dropdown-option"
                                 tabIndex={0}
+                                role="option"
+                                aria-selected={option.value === displayedValue}
                                 ref={(liElement: HTMLLIElement) => liElementRef.current[index] = liElement}
                                 onClick={() => setDisplayedValue(option.value)}
                                 onKeyDown={(event: React.KeyboardEvent<HTMLLIElement>) => validateOptionWithKeyboard(event,option)}

@@ -28,10 +28,6 @@ function TestComponent() {
                 <Dropdown displayedValue={ddl3Value}
                     setDisplayedValue={setDdl3Value}
                     optionArray={[]} />
-
-                <select name="departments" id="departments-select">
-                    {departments.map(department => <option key={department.id} value={department.value}>{department.value}</option>)}
-                </select>
             </form>
         </div>
     );
