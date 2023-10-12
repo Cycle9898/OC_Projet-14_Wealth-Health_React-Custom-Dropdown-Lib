@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Dropdown } from '../lib/main';
+import { Dropdown } from '../';
 import { departments,states } from './data/mockedDataForDropdowns';
 
 /**
