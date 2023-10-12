@@ -69,6 +69,8 @@ It is a state variable, from the parent component's local state or the app's glo
 
 Additionally, it appears in the closed drop-down list when no options have been chosen.
 
+If "displayedValue" is an empty string, it will be updated, if possible, with the first option's value from "optionArray".
+
 Afterwards, it will store the value from the chosen option from the list.
 
 * **setDisplayedValue**:

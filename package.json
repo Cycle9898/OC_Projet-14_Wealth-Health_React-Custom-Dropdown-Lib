@@ -1,13 +1,14 @@
 {
   "name": "@cycle9898/react-custom-dropdown-component",
   "private": false,
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "main": "dist/react-custom-dropdown-component.js",
   "types": "dist/main.d.ts",
   "files": [
     "dist"
   ],
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "tsc --p ./tsconfig-build.json && vite build",
