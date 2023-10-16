@@ -58,7 +58,8 @@
     list-style-type: none;
     position: absolute;
     margin-top: -3px;
-    height: fit-content;
+    max-height: 400px;
+    overflow: auto;
     border: 2px solid var(--main-color);
     border-radius: 0 0 5px 5px;
     z-index: 5;
