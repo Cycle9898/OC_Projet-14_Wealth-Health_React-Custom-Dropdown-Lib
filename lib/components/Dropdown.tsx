@@ -18,10 +18,13 @@ export function Dropdown({ displayedValue,setDisplayedValue,optionArray }: Dropd
     // Handle dropdown list opening
     const [isOpen,setIsOpen] = useState<boolean>(false);
 
-    const toggleIsOpen = () => setIsOpen((previousState: boolean) => !previousState);
+    const toggleIsOpen = (event: React.MouseEvent<HTMLDivElement,MouseEvent> | React.KeyboardEvent<HTMLDivElement>) => {
+        setIsOpen((previousState: boolean) => !previousState);
+        event.stopPropagation();
+    };
 
     const handleKeyPresses = (event: React.KeyboardEvent<HTMLDivElement>) => {
-        (event.key === "Enter" || event.key === " ") && toggleIsOpen();
+        (event.key === "Enter" || event.key === " ") && toggleIsOpen(event);
         event.key === "Escape" && setIsOpen(false);
 
         if (optionArray.length > 0) {
@@ -139,7 +142,7 @@ export function Dropdown({ displayedValue,setDisplayedValue,optionArray }: Dropd
     return (
         <div className="rcdc-dropdown-wrapper"
             ref={dropdownRef}
-            onClick={toggleIsOpen}
+            onClick={(event: React.MouseEvent<HTMLDivElement,MouseEvent>) => toggleIsOpen(event)}
             onKeyUp={(event: React.KeyboardEvent<HTMLDivElement>) => handleKeyPresses(event)}
         >
             <div className="rcdc-dropdown-value-container"
