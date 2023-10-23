@@ -13,7 +13,7 @@ The component respects the common accessibility rules (WAI-ARIA).
 Users can interact with the dropdown list with a mouse (clicks) and/or a keyboard :
 * **Tab** OR **Down Arrow**: Choose the next option and validate it
 * **Shift + Tab** OR **Up Arrow**: Choose the previous option and validate it
-* **Enter** OR **Space Bar**: Open/close the dropdown list and choose the focused option
+* **Enter** OR **Space Bar**: Open/close the dropdown list or choose the focused option
 * **Escape**: Close the dropdown list
 * **Home**: Automatically choose the first option in the dropdown list
 * **End**: Automatically choose the last option in the dropdown list
@@ -84,6 +84,15 @@ It is an array of objects, with an id (type: string) and a value (type: string) 
 that represent all the available options in the dropdown list.
 
 The ID's must be unique, otherwise the component will throw an error.
+
+* **ariaLabelById**:
+
+This prop is optional.
+
+It is a string that represents the ID of a HTML element that label the dropdown list,
+it is used for the "aria-labelledBy" attribute.
+
+If this prop is not used, the attribute "aria-label"  with the string "Choose an option from the dropdown list" will be set instead.
 
 ### Modify the style with CSS
 

@@ -1,4 +1,4 @@
-import { useEffect,useState,useRef,useCallback } from "react";
+import { useEffect,useState,useRef,useCallback,useId } from "react";
 import type { DropdownProps,OptionType } from "../types/Dropdown";
 import { FaCaretDown,FaCaretUp } from "react-icons/fa6";
 
@@ -11,10 +11,11 @@ import { FaCaretDown,FaCaretUp } from "react-icons/fa6";
  * Afterwards, it will contain the chosen value in the list.
  * @param setDisplayedValue - setState method (for exemple from the parent component's local state) to update displayedValue.
  * @param optionArray - An array of objects, with an id and a value properties, that represent all the available options in the dropdown list
+ * @param ariaLabelById - optional - ID of the HTML element that label the dropdown list, used for 'aria-labelledBy'
  * 
  * @returns JSX element
  */
-export function Dropdown({ displayedValue,setDisplayedValue,optionArray }: DropdownProps) {
+export function Dropdown({ displayedValue,setDisplayedValue,optionArray,ariaLabelById }: DropdownProps) {
     // Handle dropdown list opening
     const [isOpen,setIsOpen] = useState<boolean>(false);
 
@@ -101,6 +102,9 @@ export function Dropdown({ displayedValue,setDisplayedValue,optionArray }: Dropd
     const dropdownValueRef: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
     const liElementRef: React.MutableRefObject<HTMLLIElement[]> = useRef([]);
 
+    //ID
+    const liElementId = useId();
+
     // Check if optionArray's objects have unique id property
     const optionIdArray: string[] = optionArray.map(option => option?.id);
     const isOptionIdsNotUnique: boolean = optionIdArray.length !== new Set(optionIdArray).size;
@@ -149,7 +153,9 @@ export function Dropdown({ displayedValue,setDisplayedValue,optionArray }: Dropd
                 ref={dropdownValueRef}
                 tabIndex={0}
                 role="combobox"
-                aria-label="Choose an option from the dropdown list"
+                aria-activedescendant={liElementRef.current.find(element => element?.innerText === displayedValue)?.id}
+                aria-labelledby={ariaLabelById && ariaLabelById !== "" ? ariaLabelById : undefined}
+                aria-label={ariaLabelById && ariaLabelById !== "" ? undefined : "Choose an option from the dropdown list"}
                 aria-expanded={isOpen}
                 aria-haspopup="listbox"
             >
@@ -173,6 +179,7 @@ export function Dropdown({ displayedValue,setDisplayedValue,optionArray }: Dropd
                     {optionArray.map((option,index) => {
                         return (
                             <li key={option.id}
+                                id={`${liElementId}-${option.id}`}
                                 className="rcdc-dropdown-option"
                                 tabIndex={0}
                                 role="option"

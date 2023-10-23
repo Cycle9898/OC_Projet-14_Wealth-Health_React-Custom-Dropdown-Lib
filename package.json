@@ -1,7 +1,7 @@
 {
   "name": "@cycle9898/react-custom-dropdown-component",
   "private": false,
-  "version": "0.3.4",
+  "version": "0.3.5",
   "type": "module",
   "main": "dist/react-custom-dropdown-component.js",
   "types": "dist/main.d.ts",
