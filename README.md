@@ -1,6 +1,6 @@
 # React Custom Dropdown Component
 
-This library is used to import a custom dropdown list React component.
+This library provides a custom drop-down list React component that can be imported into any other React component.
 
 ![Dropdown image 1](https://raw.githubusercontent.com/Cycle9898/OC_Projet-14_Wealth-Health_React-Custom-Dropdown-Lib/main/doc-images/dropdown_1.png)
 
@@ -22,7 +22,9 @@ Users can interact with the dropdown list with a mouse (clicks) and/or a keyboar
 
 ### Prerequisites
 
-The project need the [React library](https://react.dev/) to work.
+[Node](https://nodejs.org/en) v18.17.0 is required because a package manager (npm or yarn, for instance) is needed to install this library.
+
+The project also need the [React library](https://react.dev/) to work.
 
 *React V18.2.0* and *React-dom V18.2.0* are required.
 

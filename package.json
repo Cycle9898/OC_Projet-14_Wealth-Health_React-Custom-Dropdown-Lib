@@ -1,7 +1,20 @@
 {
   "name": "@cycle9898/react-custom-dropdown-component",
   "private": false,
-  "version": "0.3.5",
+  "version": "0.3.6",
+  "description": "This library provides a custom drop-down list React component that can be imported into any other React component.",
+  "keywords": [
+    "react",
+    "custom",
+    "dropdown",
+    "combobox",
+    "component"
+  ],
+  "homepage": "https://github.com/Cycle9898/OC_Projet-14_Wealth-Health_React-Custom-Dropdown-Lib#readme",
+  "author": {
+    "name": "Cyril 'Cycle9898' Clément",
+    "url": "https://github.com/Cycle9898"
+  },
   "type": "module",
   "main": "dist/react-custom-dropdown-component.js",
   "types": "dist/main.d.ts",
